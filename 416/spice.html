@@ -1,0 +1,137 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPICE Demo</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" nonce="RZc0kFwBkBYS7F5VeGEQBA">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css" nonce="RZc0kFwBkBYS7F5VeGEQBA">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js" nonce="RZc0kFwBkBYS7F5VeGEQBA"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
+    <script src="https://unpkg.com/vexflow/releases/vexflow-min.js" nonce="RZc0kFwBkBYS7F5VeGEQBA"></script>
+    <script src="spice.js" nonce="RZc0kFwBkBYS7F5VeGEQBA"></script>
+</head>
+
+<body>
+    <style>
+        .demo-card-wide.mdl-card {
+            width: 100%;
+        }
+
+        #freq {
+            width: 50px;
+        }
+
+        #note {
+            width: 35px;
+        }
+
+        #conf {
+            width: 40px;
+        }
+
+        #container {
+            height: 240px;
+            overflow: hidden;
+        }
+
+        #container>div {
+            width: 20000px;
+            height: 240px;
+            white-space: nowrap;
+            margin-left: 5px;
+        }
+
+        .scroll {
+            transition: transform 8.5s linear, opacity 0.5s ease-out, fill 0.2s linear;
+        }
+
+        .scrolling {
+            transform: translate(-600px, 0);
+        }
+
+        .correct {
+            opacity: 0;
+        }
+
+        .too-slow {
+            transform: translate(-600px, 2000px);
+        }
+    </style>
+
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--1-col"></div>
+        <div class="mdl-cell mdl-cell--4-col-phone mdl-cell--6-col-desktop">
+            <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">SPICE Demo</h2>
+                </div>
+                <div id="progress" style="display: none"
+                        class="mdl-progress mdl-js-progress mdl-progress__indeterminate">
+                </div>
+                <canvas id="freqs" width="300" height="200"></canvas>
+                <div id="container">
+                    <div id="notes"></div>
+                </div>
+                <div class="mdl-card__supporting-text">
+                    This demo shows a version of the <a
+                        href="https://ai.googleblog.com/2019/11/spice-self-supervised-pitch-estimation.html">SPICE
+                        (self-supervised pitch estimation)</a>
+                    machine learning model trained on the <a
+                        href="https://sites.google.com/site/unvoicedsoundseparation/mir-1k">MIR1K dataset</a> running
+                    fully in your
+                    browser thanks to <a href="https://www.tensorflow.org/js">TensorFlow.js</a>.
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a id="start-demo-button"
+                        class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                        Start Demo
+                    </a>
+                </div>
+                <div class="mdl-card__menu">
+                    <span class="mdl-chip mdl-chip--contact">
+                        <span class="mdl-chip__contact mdl-color--pink mdl-color-text--white">∿</span>
+                        <span id="freq" class="mdl-chip__text">0Hz</span>
+                    </span>
+                    <span class="mdl-chip mdl-chip--contact">
+                        <span class="mdl-chip__contact mdl-color--pink mdl-color-text--white">♫</span>
+                        <span id="note" class="mdl-chip__text">C</span>
+                    </span>
+                    <span class="mdl-chip mdl-chip--contact">
+                        <span class="mdl-chip__contact mdl-color--pink mdl-color-text--white">&#128907;</span>
+                        <span id="conf" class="mdl-chip__text">0%</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p id="status"></p>
+
+    <script nonce="RZc0kFwBkBYS7F5VeGEQBA">
+        // Creates a note renderer that displays the notes.
+        var renderer = new NoteRenderer(document.getElementById("notes"));
+
+        window.initialize(
+            document.getElementById('freqs'),
+            document.getElementById('status'),
+            (freqStr, noteStr, confStr, note) => {
+                renderer.draw_note(note);
+                document.getElementById("freq").innerHTML = freqStr;
+                document.getElementById("note").innerHTML = noteStr;
+                document.getElementById("conf").innerHTML = confStr;
+
+                // Hide the progress bar.
+                document.getElementById("progress").style.display = 'none';
+            });
+
+        async function start() {
+            // Display the progress bar that will get hidden once the first note arrives.
+            document.getElementById("progress").style.display = 'block';
+            await window.startDemo();
+            document.getElementById("start-demo-button").style.display = 'none';
+        }
+    </script>
+
+</body>
+
+</html>
